@@ -4,9 +4,12 @@ Visualize **EUR/USD** against the things that move it — US & German bond yield
 **Fed and ECB policy rates**, their spreads, plus the dollar index, Brent, and inflation —
 and measure how they actually move together (correlation and lead-lag).
 
-**Why it helps:** macro commentary keeps claiming "the rate gap drives the euro." This lets
-you *see* it in real data — overlay the series on one timeline, and check whether the
-US–German yield spread actually **leads** EUR/USD, and how that coupling shifts over time.
+**Why it helps:** for a **euro-based (Germany/EU) investor**, this is a tool to analyze the
+value of **US Treasuries**. An unhedged USD bond's *euro* return depends on both the Treasury
+yield and the EUR/USD move, so the two have to be read together. Macro commentary keeps
+claiming "the rate gap drives the euro" — this lets you *see* it in real data: overlay the
+series on one timeline, and check whether the US–German yield spread actually **leads**
+EUR/USD, and how that coupling shifts over time.
 
 > Research / educational tool — **not financial advice.**
 
