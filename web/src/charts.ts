@@ -5,18 +5,35 @@ import { type Mode, prepare } from './transform';
 
 export type { Mode } from './transform';
 
-/** Overlay: EUR/USD on the left axis, the 10y & 2y spreads on the right axis (always levels). */
+/**
+ * Overlay (always levels): EUR/USD on the left axis; on the right axis the individual
+ * US & German yields (solid) PLUS the derived UST-Bund spreads (dashed). Yields and
+ * spreads share the right axis because both are in percent / percentage points
+ * (roughly 0-5), so the ~4% yields and the ~2 pp gaps read on one scale.
+ */
 export function renderOverlay(el: HTMLElement, panel: Panel): void {
   const x = panel.dates;
+  const yield_ = (key: string, name: string) => ({
+    x, y: panel.series[key], name, yaxis: 'y2', type: 'scatter', mode: 'lines',
+  });
+  const spread = (key: string, name: string) => ({
+    x, y: panel.series[key], name, yaxis: 'y2', type: 'scatter', mode: 'lines',
+    line: { dash: 'dash' as const },
+  });
   const traces = [
-    { x, y: panel.series.eurusd, name: 'EUR/USD', yaxis: 'y', type: 'scatter', mode: 'lines' },
-    { x, y: panel.series.spread10y, name: 'UST-Bund 10y', yaxis: 'y2', type: 'scatter', mode: 'lines' },
-    { x, y: panel.series.spread2y, name: 'UST-Schatz 2y', yaxis: 'y2', type: 'scatter', mode: 'lines' },
+    { x, y: panel.series.eurusd, name: 'EUR/USD', yaxis: 'y', type: 'scatter', mode: 'lines', line: { width: 2.5, color: '#111' } },
+    yield_('ust10y', 'US 10y'),
+    yield_('bund10y', 'DE 10y (Bund)'),
+    yield_('ust2y', 'US 2y'),
+    yield_('schatz2y', 'DE 2y (Schatz)'),
+    spread('spread10y', 'US-DE 10y spread'),
+    spread('spread2y', 'US-DE 2y spread'),
   ];
   Plotly.react(el, traces as never, {
-    title: 'EUR/USD vs yield spreads (levels)',
+    title: 'EUR/USD (left) vs US & German yields and their spreads (right)',
     yaxis: { title: 'EUR/USD' },
-    yaxis2: { title: 'spread (pp)', overlaying: 'y', side: 'right' },
+    yaxis2: { title: 'yield / spread (%, pp)', overlaying: 'y', side: 'right' },
+    legend: { orientation: 'h' },
     margin: { t: 40 },
   } as never);
 }
