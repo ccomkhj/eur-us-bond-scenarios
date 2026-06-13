@@ -6,6 +6,9 @@ ingest/.venv/
 # Node
 node_modules/
 web/dist/
+# Generated front-end data (produced by `make data` / `make sample-data`).
+# Real data lives in data/*.parquet + data/data.json (committed when fetched).
+web/public/data.json
 # OS / editor
 .DS_Store
 .idea/
