@@ -18,19 +18,23 @@ export function renderOverlay(el: HTMLElement, panel: Panel): void {
   const x = panel.dates;
   const US = '#1f77b4';
   const EU = '#ff7f0e';
-  const line = (key: string, name: string, axis: string, opts: object = {}) => ({
-    x, y: panel.series[key], name, yaxis: axis, type: 'scatter', mode: 'lines', ...opts,
-  });
+  // Only render a series that is actually present with at least one real value — a stale
+  // data.json missing a key then degrades to an empty panel rather than a junk auto-scaled
+  // axis. Regenerate with `make sample-data` / `make data` if a panel is empty.
+  const present = (key: string): boolean =>
+    Array.isArray(panel.series[key]) && panel.series[key]!.some((v) => v != null);
+  const line = (key: string, name: string, axis: string, opts: object = {}) =>
+    present(key) ? [{ x, y: panel.series[key], name, yaxis: axis, type: 'scatter', mode: 'lines', ...opts }] : [];
   const traces = [
-    line('eurusd', 'EUR/USD', 'y', { line: { width: 2, color: '#111' } }),
-    line('ust10y', 'US 10y', 'y2', { line: { color: US } }),
-    line('bund10y', 'DE 10y (Bund)', 'y2', { line: { color: EU } }),
-    line('ust2y', 'US 2y', 'y2', { line: { color: US, dash: 'dot' } }),
-    line('schatz2y', 'DE 2y (Schatz)', 'y2', { line: { color: EU, dash: 'dot' } }),
-    line('fed_funds', 'Fed funds', 'y3', { line: { color: US, shape: 'hv' } }),
-    line('ecb_rate', 'ECB deposit rate', 'y3', { line: { color: EU, shape: 'hv' } }),
-    line('spread10y', 'US-DE 10y spread', 'y4', { line: { color: '#2ca02c' } }),
-    line('spread2y', 'US-DE 2y spread', 'y4', { line: { color: '#9467bd' } }),
+    ...line('eurusd', 'EUR/USD', 'y', { line: { width: 2, color: '#111' } }),
+    ...line('ust10y', 'US 10y', 'y2', { line: { color: US } }),
+    ...line('bund10y', 'DE 10y (Bund)', 'y2', { line: { color: EU } }),
+    ...line('ust2y', 'US 2y', 'y2', { line: { color: US, dash: 'dot' } }),
+    ...line('schatz2y', 'DE 2y (Schatz)', 'y2', { line: { color: EU, dash: 'dot' } }),
+    ...line('fed_funds', 'Fed funds', 'y3', { line: { color: US, shape: 'hv' } }),
+    ...line('ecb_rate', 'ECB deposit rate', 'y3', { line: { color: EU, shape: 'hv' } }),
+    ...line('spread10y', 'US-DE 10y spread', 'y4', { line: { color: '#2ca02c' } }),
+    ...line('spread2y', 'US-DE 2y spread', 'y4', { line: { color: '#9467bd' } }),
   ];
   // Taller canvas so four stacked panels stay legible (other charts keep their CSS height).
   el.style.height = '760px';
