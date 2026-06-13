@@ -100,7 +100,14 @@ history enables a later **regime-comparison** toggle.
 Deferred: correlation heatmap + scatter/regression (breadth view, post-v1).
 
 ### Data in git
-The data artifacts (`daily.parquet`, `monthly.parquet`, `data.json`) are **committed**
-— they're tiny (a few thousand daily rows) and the static front-end loads the JSON
-directly with no backend. Refresh is **manual** via an ingest script (`python ingest.py`
-/ `make data`); scheduled auto-refresh is a later option, not v1.
+The data artifacts (`daily.parquet`, `monthly.parquet`, `data.json`) are intended to be
+**committed** — they're tiny (a few thousand daily rows) and the static front-end loads
+the JSON directly with no backend. Refresh is **manual** via the ingest CLI
+(`make data`); scheduled auto-refresh is a later option, not v1.
+
+> **Current state (real fetch deferred):** FRED's CSV endpoint was unreachable from the
+> build environment, so no *real* data is committed yet. The ingest code is correct and
+> source-pinned — run `make data` from a network with FRED access to produce and commit
+> the real panels. Until then `web/public/data.json` is **gitignored** and produced
+> locally by `make sample-data` (synthetic, for offline front-end dev). See
+> [`docs/adr/0002-defer-real-data-fetch.md`](docs/adr/0002-defer-real-data-fetch.md).
