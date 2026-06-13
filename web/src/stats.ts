@@ -65,3 +65,35 @@ export function rollingCorr(xs: Num[], ys: Num[], window: number): (number | nul
   }
   return out;
 }
+
+export interface LagCorr {
+  lag: number;
+  corr: number | null;
+}
+
+/**
+ * Cross-correlation of x and y over lags [-maxLag, maxLag].
+ * corr at lag L = pearson(x_t, y_{t+L}). A positive peak lag means **x leads y**
+ * by that many steps. Inputs should already be changes/returns, not levels.
+ */
+export function crossCorr(xs: Num[], ys: Num[], maxLag: number): LagCorr[] {
+  const res: LagCorr[] = [];
+  for (let lag = -maxLag; lag <= maxLag; lag++) {
+    let a: Num[];
+    let b: Num[];
+    if (lag >= 0) {
+      a = xs.slice(0, xs.length - lag);
+      b = ys.slice(lag);
+    } else {
+      a = xs.slice(-lag);
+      b = ys.slice(0, ys.length + lag);
+    }
+    res.push({ lag, corr: pearson(a, b) });
+  }
+  return res;
+}
+
+/** Approximate ±2/sqrt(n) white-noise significance band for a correlation. */
+export function bartlettBand(n: number): number {
+  return 2 / Math.sqrt(n);
+}

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { diffs, logReturns } from '../src/stats';
 import { pearson, rollingCorr } from '../src/stats';
+import { crossCorr, bartlettBand } from '../src/stats';
 
 describe('transforms', () => {
   it('diffs returns first-difference with leading null and null-on-gap', () => {
@@ -38,5 +39,23 @@ describe('correlation', () => {
     expect(r[1]).toBeNull();
     expect(r[2]).toBeCloseTo(1, 10);
     expect(r[3]).toBeCloseTo(1, 10);
+  });
+});
+
+describe('lead-lag', () => {
+  it('crossCorr peaks at the lag by which x leads y', () => {
+    // x leads y by 1 step: y[t] = x[t-1]. Use non-linear data so only lag=1 peaks.
+    const x = [1, 3, 2, 5, 4, 7, 6, 8];
+    const y = [0, 1, 3, 2, 5, 4, 7, 6];
+    const cc = crossCorr(x, y, 3);
+    const peak = cc.reduce((best, c) => ((c.corr ?? -2) > (best.corr ?? -2) ? c : best));
+    expect(peak.lag).toBe(1);
+    expect(peak.corr).toBeCloseTo(1, 10);
+    expect(cc[0]!.lag).toBe(-3);
+    expect(cc[cc.length - 1]!.lag).toBe(3);
+  });
+
+  it('bartlettBand is 2/sqrt(n)', () => {
+    expect(bartlettBand(100)).toBeCloseTo(0.2, 10);
   });
 });
