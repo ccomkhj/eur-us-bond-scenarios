@@ -41,6 +41,23 @@ def test_build_daily_panel_does_not_backfill_leading_gaps():
     assert df.loc["2020-01-03", "brent"] == 66.0
 
 
+def test_build_daily_panel_preserves_weekend_observations():
+    # A Saturday Brent print must NOT be dropped by the business-day index.
+    series = {
+        "eurusd": _series(["2020-01-02", "2020-01-03"], [1.12, 1.13], "eurusd"),
+        "ust10y": _series(["2020-01-02", "2020-01-03"], [1.90, 1.85], "ust10y"),
+        "bund10y": _series(["2020-01-02", "2020-01-03"], [-0.20, -0.25], "bund10y"),
+        "ust2y": _series(["2020-01-02", "2020-01-03"], [1.55, 1.52], "ust2y"),
+        "schatz2y": _series(["2020-01-02", "2020-01-03"], [-0.60, -0.61], "schatz2y"),
+        "dxy": _series(["2020-01-02", "2020-01-03"], [96.0, 96.2], "dxy"),
+        # 2020-01-04 is a Saturday
+        "brent": _series(["2020-01-02", "2020-01-04"], [66.0, 67.0], "brent"),
+    }
+    df = build_daily_panel(series)
+    assert pd.Timestamp("2020-01-04") in df.index
+    assert df.loc["2020-01-04", "brent"] == 67.0
+
+
 def test_build_monthly_panel_resamples_and_joins_inflation():
     daily_idx = pd.bdate_range("2020-01-01", "2020-02-28")
     daily = pd.DataFrame(
