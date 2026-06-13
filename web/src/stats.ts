@@ -21,3 +21,47 @@ export function logReturns(xs: Num[]): Num[] {
   }
   return out;
 }
+
+/** Pearson correlation over pairwise-complete observations. Null if < 3 valid pairs. */
+export function pearson(xs: Num[], ys: Num[]): number | null {
+  const xv: number[] = [];
+  const yv: number[] = [];
+  const n = Math.min(xs.length, ys.length);
+  for (let i = 0; i < n; i++) {
+    const a = xs[i];
+    const b = ys[i];
+    if (a != null && b != null && Number.isFinite(a) && Number.isFinite(b)) {
+      xv.push(a);
+      yv.push(b);
+    }
+  }
+  const m = xv.length;
+  if (m < 3) return null;
+  const mx = xv.reduce((s, v) => s + v, 0) / m;
+  const my = yv.reduce((s, v) => s + v, 0) / m;
+  let sxy = 0;
+  let sxx = 0;
+  let syy = 0;
+  for (let i = 0; i < m; i++) {
+    const dx = xv[i]! - mx;
+    const dy = yv[i]! - my;
+    sxy += dx * dy;
+    sxx += dx * dx;
+    syy += dy * dy;
+  }
+  const denom = Math.sqrt(sxx * syy);
+  return denom === 0 ? null : sxy / denom;
+}
+
+/** Trailing rolling Pearson correlation; null until `window` points are available. */
+export function rollingCorr(xs: Num[], ys: Num[], window: number): (number | null)[] {
+  const out: (number | null)[] = [];
+  for (let i = 0; i < xs.length; i++) {
+    if (i + 1 < window) {
+      out.push(null);
+      continue;
+    }
+    out.push(pearson(xs.slice(i + 1 - window, i + 1), ys.slice(i + 1 - window, i + 1)));
+  }
+  return out;
+}
