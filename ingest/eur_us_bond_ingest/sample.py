@@ -32,7 +32,7 @@ def _walk(n: int, start: float, step: float, seed: int) -> list[float]:
     return values
 
 
-def make_sample(start: str = "2015-01-01", end: str = "2025-01-01") -> tuple[pd.DataFrame, pd.DataFrame]:
+def make_sample(start: str = "2015-01-01", end: str = "2026-06-13") -> tuple[pd.DataFrame, pd.DataFrame]:
     bdays = pd.bdate_range(start, end)
 
     def series(name: str, s0: float, step: float, seed: int) -> pd.Series:
@@ -46,6 +46,8 @@ def make_sample(start: str = "2015-01-01", end: str = "2025-01-01") -> tuple[pd.
         "bund10y": series("bund10y", 0.5, 0.03, 3),
         "ust2y": series("ust2y", 1.5, 0.03, 4),
         "schatz2y": series("schatz2y", 0.0, 0.03, 5),
+        "fed_funds": series("fed_funds", 1.0, 0.02, 10),
+        "ecb_rate": series("ecb_rate", 0.0, 0.02, 11),
         "dxy": series("dxy", 95.0, 0.2, 6),
         "brent": series("brent", 70.0, 1.0, 7),
     }

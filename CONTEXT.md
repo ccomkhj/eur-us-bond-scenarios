@@ -28,8 +28,10 @@ The minimum set the analysis is built on:
 - **UST10y** — US Treasury 10-year *market yield* (not the coupon).
 - **Bund10y** — German 10-year *market yield* (the EU long-rate proxy).
 
-"Interest rate" is deliberately resolved to **market government-bond yields**, not
-central-bank **policy rates** — the daily FX carry signal is the market yield gap.
+"Interest rate" was first resolved to **market government-bond yields** (the daily FX
+carry signal is the market yield gap). **Policy rates were later added too** (see below)
+as a *distinct* concept — what central banks set — shown in their own panel, so the repo
+now carries both the market yields and the policy rates.
 
 ### Yield spread
 Derived series **UST10y − Bund10y**. The candidate lead indicator for EUR/USD: the
@@ -43,6 +45,7 @@ Beyond the core 3, the full ingest set (mapped to the causal chain):
 | EUR/USD | the FX rate under study | daily |
 | UST10y, Bund10y | 10y carry; `10y spread` | daily |
 | UST2y, Schatz2y | front-end = policy-path expectation; `2y spread` | daily |
+| Fed funds, ECB deposit rate | central-bank **policy rates** (what they set) | daily (step) |
 | DXY (broad USD) | separates the USD leg from the EUR leg | daily |
 | Brent / EU gas | exogenous war→energy trigger (chain start) | daily |
 | EU HICP, US CPI | energy→inflation link | **monthly** |

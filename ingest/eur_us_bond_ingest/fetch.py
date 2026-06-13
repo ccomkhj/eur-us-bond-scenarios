@@ -20,7 +20,7 @@ def fetch_all() -> dict[str, pd.Series]:
     for name, series_id in FRED_SERIES.items():
         text = _get(FRED_CSV_URL.format(series_id=series_id))
         series[name] = parse_fred_csv(text, name)
-    for name, key in ECB_SERIES.items():
-        text = _get(ECB_CSV_URL.format(key=key))
+    for name, (flow, key) in ECB_SERIES.items():
+        text = _get(ECB_CSV_URL.format(flow=flow, key=key))
         series[name] = parse_ecb_csv(text, name)
     return series

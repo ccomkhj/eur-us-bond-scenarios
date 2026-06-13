@@ -6,35 +6,45 @@ import { type Mode, prepare } from './transform';
 export type { Mode } from './transform';
 
 /**
- * Overlay (always levels): EUR/USD on the left axis; on the right axis the individual
- * US & German yields (solid) PLUS the derived UST-Bund spreads (dashed). Yields and
- * spreads share the right axis because both are in percent / percentage points
- * (roughly 0-5), so the ~4% yields and the ~2 pp gaps read on one scale.
+ * Overlay (always levels) as four stacked panels sharing one time axis — avoids
+ * cramming different scales (EUR/USD ~1.1, rates ~0-5%, spreads ~2 pp) onto one axis:
+ *   - EUR/USD
+ *   - market yields: US & German 2y & 10y (%)
+ *   - policy rates: Fed funds & ECB deposit rate (%)
+ *   - spreads: US-DE 2y & 10y (pp)
+ * Country colours are consistent across panels (US = blue, Germany/euro area = orange).
  */
 export function renderOverlay(el: HTMLElement, panel: Panel): void {
   const x = panel.dates;
-  const yield_ = (key: string, name: string) => ({
-    x, y: panel.series[key], name, yaxis: 'y2', type: 'scatter', mode: 'lines',
-  });
-  const spread = (key: string, name: string) => ({
-    x, y: panel.series[key], name, yaxis: 'y2', type: 'scatter', mode: 'lines',
-    line: { dash: 'dash' as const },
+  const US = '#1f77b4';
+  const EU = '#ff7f0e';
+  const line = (key: string, name: string, axis: string, opts: object = {}) => ({
+    x, y: panel.series[key], name, yaxis: axis, type: 'scatter', mode: 'lines', ...opts,
   });
   const traces = [
-    { x, y: panel.series.eurusd, name: 'EUR/USD', yaxis: 'y', type: 'scatter', mode: 'lines', line: { width: 2.5, color: '#111' } },
-    yield_('ust10y', 'US 10y'),
-    yield_('bund10y', 'DE 10y (Bund)'),
-    yield_('ust2y', 'US 2y'),
-    yield_('schatz2y', 'DE 2y (Schatz)'),
-    spread('spread10y', 'US-DE 10y spread'),
-    spread('spread2y', 'US-DE 2y spread'),
+    line('eurusd', 'EUR/USD', 'y', { line: { width: 2, color: '#111' } }),
+    line('ust10y', 'US 10y', 'y2', { line: { color: US } }),
+    line('bund10y', 'DE 10y (Bund)', 'y2', { line: { color: EU } }),
+    line('ust2y', 'US 2y', 'y2', { line: { color: US, dash: 'dot' } }),
+    line('schatz2y', 'DE 2y (Schatz)', 'y2', { line: { color: EU, dash: 'dot' } }),
+    line('fed_funds', 'Fed funds', 'y3', { line: { color: US, shape: 'hv' } }),
+    line('ecb_rate', 'ECB deposit rate', 'y3', { line: { color: EU, shape: 'hv' } }),
+    line('spread10y', 'US-DE 10y spread', 'y4', { line: { color: '#2ca02c' } }),
+    line('spread2y', 'US-DE 2y spread', 'y4', { line: { color: '#9467bd' } }),
   ];
+  // Taller canvas so four stacked panels stay legible (other charts keep their CSS height).
+  el.style.height = '760px';
   Plotly.react(el, traces as never, {
-    title: 'EUR/USD (left) vs US & German yields and their spreads (right)',
-    yaxis: { title: 'EUR/USD' },
-    yaxis2: { title: 'yield / spread (%, pp)', overlaying: 'y', side: 'right' },
-    legend: { orientation: 'h' },
-    margin: { t: 40 },
+    height: 760,
+    title: 'EUR/USD vs US & German yields, policy rates, and spreads (shared time axis)',
+    xaxis: { anchor: 'y4', domain: [0, 1] },
+    yaxis: { domain: [0.79, 1.0], title: 'EUR/USD' },
+    yaxis2: { domain: [0.54, 0.75], title: 'yield (%)' },
+    yaxis3: { domain: [0.29, 0.5], title: 'policy (%)' },
+    yaxis4: { domain: [0.0, 0.25], title: 'spread (pp)' },
+    legend: { orientation: 'h', y: 1.06 },
+    hovermode: 'x unified',
+    margin: { t: 60 },
   } as never);
 }
 
