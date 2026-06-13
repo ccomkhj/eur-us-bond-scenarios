@@ -27,7 +27,13 @@ function rerender(data: Dataset): void {
 }
 
 async function boot(): Promise<void> {
-  const data = await loadDataset();
+  let data: Dataset;
+  try {
+    data = await loadDataset();
+  } catch (err) {
+    $('warn').textContent = `Could not load data.json — run \`make sample-data\` (or \`make data\`) first. (${String(err)})`;
+    return;
+  }
   ($('start') as HTMLInputElement).value = data.meta.default_start;
   for (const id of ['mode', 'start', 'window', 'maxlag']) {
     $(id).addEventListener('input', () => rerender(data));

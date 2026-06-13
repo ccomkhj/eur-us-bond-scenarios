@@ -72,3 +72,15 @@ describe('lead-lag', () => {
     expect(Number.isNaN(bartlettBand(0))).toBe(true);
   });
 });
+
+describe('lead-lag negative branch', () => {
+  it('crossCorr peaks at a negative lag when y leads x', () => {
+    // x_t = y_{t-1}: y leads x by 1, so corr(x_t, y_{t+lag}) peaks at lag = -1.
+    const y = [1, 3, 2, 5, 4, 7, 6, 8];
+    const x = [0, 1, 3, 2, 5, 4, 7, 6];
+    const cc = crossCorr(x, y, 3);
+    const peak = cc.reduce((best, c) => ((c.corr ?? -2) > (best.corr ?? -2) ? c : best));
+    expect(peak.lag).toBe(-1);
+    expect(peak.corr).toBeCloseTo(1, 10);
+  });
+});

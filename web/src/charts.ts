@@ -1,21 +1,9 @@
 import Plotly from 'plotly.js-dist-min';
 import type { Panel } from './data';
-import { type Num, diffs, logReturns, rollingCorr, crossCorr, bartlettBand } from './stats';
+import { type Num, rollingCorr, crossCorr, bartlettBand } from './stats';
+import { type Mode, prepare } from './transform';
 
-export type Mode = 'changes' | 'levels';
-
-// Price-like series use log-returns; yields/spreads use first differences.
-const LOG_RETURN_SERIES = new Set(['eurusd', 'dxy', 'brent']);
-
-/**
- * Series prepared for statistics given the mode:
- * - 'levels': raw series as-is (correlation here is often spurious — for teaching contrast).
- * - 'changes': log-returns for price-like series, first differences for yields/spreads.
- */
-export function prepare(name: string, xs: Num[], mode: Mode): Num[] {
-  if (mode === 'levels') return xs;
-  return (LOG_RETURN_SERIES.has(name) ? logReturns : diffs)(xs);
-}
+export type { Mode } from './transform';
 
 /** Overlay: EUR/USD on the left axis, the 10y & 2y spreads on the right axis (always levels). */
 export function renderOverlay(el: HTMLElement, panel: Panel): void {
