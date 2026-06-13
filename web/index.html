@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EUR/US Bond Scenarios</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; }
+      .controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.5rem; }
+      .chart { width: 100%; height: 380px; }
+      .note { color: #b45309; font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <h1>EUR/US Bond Scenarios</h1>
+    <div class="controls">
+      <label>Mode:
+        <select id="mode"><option value="changes">changes (honest)</option><option value="levels">levels</option></select>
+      </label>
+      <label>Start: <input id="start" type="date" /></label>
+      <label>Rolling window (days): <input id="window" type="range" min="20" max="250" value="90" /><span id="windowVal">90</span></label>
+      <label>Max lag (days): <input id="maxlag" type="range" min="10" max="120" value="60" /><span id="maxlagVal">60</span></label>
+      <span id="warn" class="note"></span>
+    </div>
+    <div id="overlay" class="chart"></div>
+    <div id="leadlag" class="chart"></div>
+    <div id="rollcorr" class="chart"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
