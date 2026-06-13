@@ -10,7 +10,7 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
 
 def main() -> None:
-    print("Fetching series from FRED + ECB ...")
+    print("Fetching series from ECB, NY Fed, US Treasury, Yahoo, BLS ...")
     series = fetch_all()
     for name, s in series.items():
         print(f"  {name:10s} {len(s):6d} obs  {s.index.min().date()} -> {s.index.max().date()}")
