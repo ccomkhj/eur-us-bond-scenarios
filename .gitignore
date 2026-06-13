@@ -14,3 +14,8 @@ web/public/data.json
 .idea/
 .vscode/
 *.swp
+
+# Local design docs (kept locally, not published)
+CONTEXT.md
+docs/adr/
+docs/superpowers/
