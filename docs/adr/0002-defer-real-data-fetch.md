@@ -1,6 +1,7 @@
 # Defer the real FRED/ECB data fetch; ship a synthetic sample for offline dev
 
-**Status:** accepted
+**Status:** superseded by [ADR-0003](0003-resource-off-fred.md) — rather than wait for FRED
+access, we re-sourced every series off FRED to reachable providers and committed real data.
 
 The committed-data decision (ADR-0001, CONTEXT.md) assumes `data/*.parquet` and `data.json`
 are produced by `make data` and committed. During the initial build, **FRED's CSV endpoint

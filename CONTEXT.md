@@ -55,13 +55,19 @@ problem the Phase-1 correlation/lead-lag layer must handle (see ADRs).
 
 ### Phase 0 — Ingestion (in scope)
 No ingestion code or parquet existed at the start, so this repo *owns* ingestion.
-The pipeline is **fetch (FRED + ECB Data Portal) → tidy → parquet**, and the viz
-layer reads only the parquet. FRED covers most series; **daily Bund/Schatz yields
-come from the ECB Data Portal** (FRED's German yields are monthly). The parquet on
-disk is the contract between Phase 0 and the Phase-1 viz/stats layer.
+The pipeline is **fetch → tidy → parquet**, and the viz layer reads only the parquet.
+FRED was the original plan but its endpoint is unreachable from this network (ADR-0002),
+so every series is sourced from a reachable, keyless provider instead (ADR-0003):
+- **ECB Data Portal** — EUR/USD, Bund & Schatz yields, ECB deposit rate, euro-area HICP
+- **US Treasury** — US 2y & 10y par yields (official daily CSV)
+- **NY Fed** — effective federal funds rate
+- **Yahoo Finance** — DXY, Brent
+- **BLS** — US CPI
+
+The parquet on disk is the contract between Phase 0 and the Phase-1 viz/stats layer.
 
 ### Architecture — two runtimes, static front-end
-- **Python (build-time):** fetch FRED/ECB → tidy → **align** all series onto a common
+- **Python (build-time):** fetch (ECB/Treasury/NY Fed/Yahoo/BLS) → tidy → **align** all series onto a common
   index → write canonical **parquet** + an exported **`data.json`** for the front-end.
   Python's job is ingestion + alignment; it does *not* run at app runtime.
 - **TypeScript (runtime):** a **static** front-end loads `data.json` and computes the
@@ -103,14 +109,13 @@ history enables a later **regime-comparison** toggle.
 Deferred: correlation heatmap + scatter/regression (breadth view, post-v1).
 
 ### Data in git
-The data artifacts (`daily.parquet`, `monthly.parquet`, `data.json`) are intended to be
-**committed** — they're tiny (a few thousand daily rows) and the static front-end loads
-the JSON directly with no backend. Refresh is **manual** via the ingest CLI
-(`make data`); scheduled auto-refresh is a later option, not v1.
+The data artifacts (`daily.parquet`, `monthly.parquet`, `data.json`) are **committed** —
+they're small and the static front-end loads the JSON directly with no backend. Refresh is
+**manual** via the ingest CLI (`make data`); scheduled auto-refresh is a later option.
 
-> **Current state (real fetch deferred):** FRED's CSV endpoint was unreachable from the
-> build environment, so no *real* data is committed yet. The ingest code is correct and
-> source-pinned — run `make data` from a network with FRED access to produce and commit
-> the real panels. Until then `web/public/data.json` is **gitignored** and produced
-> locally by `make sample-data` (synthetic, for offline front-end dev). See
-> [`docs/adr/0002-defer-real-data-fetch.md`](docs/adr/0002-defer-real-data-fetch.md).
+**Real data is now committed** (1999→today, sourced off FRED per ADR-0003). `make data`
+fetches the real panels and copies `data.json` to `web/public/`; `make sample-data`
+generates an offline synthetic stand-in. `web/public/data.json` itself stays **gitignored**
+(a generated copy) — `data/` holds the canonical committed artifacts. See
+[`docs/adr/0002`](docs/adr/0002-defer-real-data-fetch.md) and
+[`docs/adr/0003`](docs/adr/0003-resource-off-fred.md).

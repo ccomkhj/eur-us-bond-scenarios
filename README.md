@@ -15,13 +15,14 @@ for the architecture.
 Requires [uv](https://docs.astral.sh/uv/).
 
 ```bash
-make data         # real: fetch FRED + ECB -> data/*.parquet + data/data.json, copy to web/public
+make data         # real: fetch ECB/Treasury/NY Fed/Yahoo/BLS -> data/*.parquet + data.json
 make sample-data  # offline: synthetic data.json for front-end dev (NOT real market data)
 ```
 
-> Note: FRED's CSV endpoint may be unreachable from some networks/CI. The ingest code is
-> source-pinned and correct; run `make data` from a network with FRED access to produce the
-> real panels. Use `make sample-data` to develop the front-end offline.
+Real data is committed in `data/`. Sources (all reachable & keyless — FRED is intentionally
+**not** used, see [`docs/adr/0003`](docs/adr/0003-resource-off-fred.md)): **ECB Data Portal**
+(EUR/USD, Bund/Schatz yields, ECB deposit rate, HICP), **US Treasury** (US 2y/10y yields),
+**NY Fed** (Fed funds), **Yahoo Finance** (DXY, Brent), **BLS** (US CPI).
 
 ## Run the app
 
