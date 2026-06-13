@@ -9,11 +9,11 @@ const $ = <T extends HTMLElement>(id: string): T => {
 
 function rerender(data: Dataset): void {
   const start = ($('start') as HTMLInputElement).value || data.meta.default_start;
-  const window = Number(($('window') as HTMLInputElement).value);
+  const windowDays = Number(($('window') as HTMLInputElement).value);
   const maxLag = Number(($('maxlag') as HTMLInputElement).value);
   const mode = (($('mode') as HTMLSelectElement).value as Mode);
 
-  $('windowVal').textContent = String(window);
+  $('windowVal').textContent = String(windowDays);
   $('maxlagVal').textContent = String(maxLag);
   $('warn').textContent =
     mode === 'levels'
@@ -23,7 +23,7 @@ function rerender(data: Dataset): void {
   const panel = sliceFrom(data.daily, start);
   renderOverlay($('overlay'), panel);
   renderLeadLag($('leadlag'), panel, maxLag, mode);
-  renderRollingCorr($('rollcorr'), panel, window, mode);
+  renderRollingCorr($('rollcorr'), panel, windowDays, mode);
 }
 
 async function boot(): Promise<void> {

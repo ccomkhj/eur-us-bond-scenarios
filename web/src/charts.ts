@@ -61,15 +61,15 @@ export function renderLeadLag(el: HTMLElement, panel: Panel, maxLag: number, mod
 }
 
 /** Rolling correlation of EUR/USD vs 10y-spread over time. */
-export function renderRollingCorr(el: HTMLElement, panel: Panel, window: number, mode: Mode): void {
+export function renderRollingCorr(el: HTMLElement, panel: Panel, windowDays: number, mode: Mode): void {
   const fx = prepare('eurusd', panel.series.eurusd ?? [], mode);
   const sp = prepare('spread10y', panel.series.spread10y ?? [], mode);
-  const rc = rollingCorr(fx, sp, window);
+  const rc = rollingCorr(fx, sp, windowDays);
   Plotly.react(
     el,
-    [{ x: panel.dates, y: rc, type: 'scatter', mode: 'lines', name: `rolling ${window}d` }] as never,
+    [{ x: panel.dates, y: rc, type: 'scatter', mode: 'lines', name: `rolling ${windowDays}d` }] as never,
     {
-      title: `Rolling correlation (${window}d): EUR/USD vs 10y spread (${mode})`,
+      title: `Rolling correlation (${windowDays}d): EUR/USD vs 10y spread (${mode})`,
       yaxis: { title: 'correlation', range: [-1, 1] },
       margin: { t: 40 },
     } as never,
