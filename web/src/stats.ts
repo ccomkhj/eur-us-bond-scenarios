@@ -2,6 +2,7 @@ export type Num = number | null;
 
 /** First difference. Leading element is null; any gap (null on either side) yields null. */
 export function diffs(xs: Num[]): Num[] {
+  if (xs.length === 0) return [];
   const out: Num[] = [null];
   for (let i = 1; i < xs.length; i++) {
     const a = xs[i - 1];
@@ -13,6 +14,7 @@ export function diffs(xs: Num[]): Num[] {
 
 /** Log returns. Leading element null; null when either value is missing or non-positive. */
 export function logReturns(xs: Num[]): Num[] {
+  if (xs.length === 0) return [];
   const out: Num[] = [null];
   for (let i = 1; i < xs.length; i++) {
     const a = xs[i - 1];
@@ -95,5 +97,5 @@ export function crossCorr(xs: Num[], ys: Num[], maxLag: number): LagCorr[] {
 
 /** Approximate ±2/sqrt(n) white-noise significance band for a correlation. */
 export function bartlettBand(n: number): number {
-  return 2 / Math.sqrt(n);
+  return n > 0 ? 2 / Math.sqrt(n) : NaN;
 }

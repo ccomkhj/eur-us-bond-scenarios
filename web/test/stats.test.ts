@@ -18,6 +18,11 @@ describe('transforms', () => {
     expect(logReturns([null, 110])[1]).toBeNull();
     expect(logReturns([0, 110])[1]).toBeNull();
   });
+
+  it('diffs and logReturns return [] for empty input', () => {
+    expect(diffs([])).toEqual([]);
+    expect(logReturns([])).toEqual([]);
+  });
 });
 
 describe('correlation', () => {
@@ -31,6 +36,10 @@ describe('correlation', () => {
 
   it('pearson returns null with fewer than 3 valid pairs', () => {
     expect(pearson([1, 2], [2, 4])).toBeNull();
+  });
+
+  it('pearson returns null for a constant series (zero variance)', () => {
+    expect(pearson([5, 5, 5, 5], [1, 2, 3, 4])).toBeNull();
   });
 
   it('rollingCorr emits null until the window is full', () => {
@@ -57,5 +66,9 @@ describe('lead-lag', () => {
 
   it('bartlettBand is 2/sqrt(n)', () => {
     expect(bartlettBand(100)).toBeCloseTo(0.2, 10);
+  });
+
+  it('bartlettBand returns NaN for n <= 0', () => {
+    expect(Number.isNaN(bartlettBand(0))).toBe(true);
   });
 });
