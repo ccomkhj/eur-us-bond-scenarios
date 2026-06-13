@@ -5,11 +5,13 @@ from .sources import DAILY_SERIES, MONTHLY_ONLY
 
 
 def build_daily_panel(series: dict[str, pd.Series]) -> pd.DataFrame:
-    """Reindex daily series to a common business-day index, forward-fill gaps
-    (holidays), and add the derived yield spreads. Leading NaNs (before a series'
-    first observation) are left as NaN — we never backfill."""
+    """Reindex daily series to a common index — the business-day grid augmented
+    with any observation dates that fall outside it (e.g. a weekend Brent print)
+    so no real observation is ever dropped — forward-fill gaps (holidays), and add
+    the derived yield spreads. Leading NaNs (before a series' first observation)
+    are left as NaN — we never backfill."""
     df = pd.DataFrame({k: series[k] for k in DAILY_SERIES})
-    idx = pd.bdate_range(df.index.min(), df.index.max())
+    idx = pd.bdate_range(df.index.min(), df.index.max()).union(df.index)
     df = df.reindex(idx).ffill()
     df["spread10y"] = df["ust10y"] - df["bund10y"]
     df["spread2y"] = df["ust2y"] - df["schatz2y"]

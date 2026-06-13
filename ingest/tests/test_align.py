@@ -26,6 +26,21 @@ def test_build_daily_panel_reindexes_to_business_days_ffills_and_adds_spreads():
     assert df.index.name == "date"
 
 
+def test_build_daily_panel_does_not_backfill_leading_gaps():
+    series = {
+        "eurusd": _series(["2020-01-02", "2020-01-03", "2020-01-06"], [1.12, 1.12, 1.13], "eurusd"),
+        "ust10y": _series(["2020-01-02", "2020-01-03", "2020-01-06"], [1.90, 1.85, 1.80], "ust10y"),
+        "bund10y": _series(["2020-01-02", "2020-01-03", "2020-01-06"], [-0.20, -0.25, -0.30], "bund10y"),
+        "ust2y": _series(["2020-01-02", "2020-01-03", "2020-01-06"], [1.55, 1.52, 1.50], "ust2y"),
+        "schatz2y": _series(["2020-01-02", "2020-01-03", "2020-01-06"], [-0.60, -0.61, -0.62], "schatz2y"),
+        "dxy": _series(["2020-01-02", "2020-01-03", "2020-01-06"], [96.0, 96.2, 96.5], "dxy"),
+        "brent": _series(["2020-01-03", "2020-01-06"], [66.0, 68.0], "brent"),
+    }
+    df = build_daily_panel(series)
+    assert pd.isna(df.loc["2020-01-02", "brent"])
+    assert df.loc["2020-01-03", "brent"] == 66.0
+
+
 def test_build_monthly_panel_resamples_and_joins_inflation():
     daily_idx = pd.bdate_range("2020-01-01", "2020-02-28")
     daily = pd.DataFrame(

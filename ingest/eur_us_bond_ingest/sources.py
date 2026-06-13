@@ -21,5 +21,7 @@ ECB_SERIES: dict[str, str] = {
 DAILY_SERIES: list[str] = ["eurusd", "ust10y", "bund10y", "ust2y", "schatz2y", "dxy", "brent"]
 MONTHLY_ONLY: list[str] = ["us_cpi", "eu_hicp"]
 
+assert not (set(DAILY_SERIES) & set(MONTHLY_ONLY)), "a series cannot be both daily and monthly-only"
+
 FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
 ECB_CSV_URL = "https://data-api.ecb.europa.eu/service/data/YC/{key}?format=csvdata"
