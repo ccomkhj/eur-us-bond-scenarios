@@ -10,6 +10,8 @@ US–German yield spread actually **leads** EUR/USD, and how that coupling shift
 
 > Research / educational tool — **not financial advice.**
 
+![EUR/US Bond Scenarios — EUR/USD with US & German yields, Fed/ECB policy rates, spreads, lead-lag and rolling correlation](assets/screenshot.png)
+
 ## Run
 
 Requires [uv](https://docs.astral.sh/uv/) and Node.js 18+.
